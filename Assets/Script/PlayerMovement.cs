@@ -6,6 +6,8 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float movementSpeed = 5;
     [SerializeField] private float rotationSpeed = 500;
+    [SerializeField] private List<Transform> boxes = new List<Transform>();
+    [SerializeField] private Transform boxHandPlace;
 
     Animator anim;
 
@@ -19,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         anim = gameObject.GetComponent<Animator>();
+        boxes.Add(boxHandPlace);
     }
 
     void Update()
@@ -53,6 +56,17 @@ public class PlayerMovement : MonoBehaviour
             }
             gameObject.transform.rotation = Quaternion.RotateTowards(transform.rotation, CalculateRotation(), rotationSpeed * Time.deltaTime);
             gameObject.transform.Translate(Vector3.forward * Time.deltaTime * movementSpeed);
+        }
+        if (Physics.Raycast(transform.position, transform.forward, out var hit, 1f))
+        {
+            if (hit.collider.CompareTag("boxCollectPoint") && boxes.Count < 4){
+                if(hit.collider.transform.childCount > 2) {
+                    var box = hit.collider.transform.GetChild(1);
+                    boxes.Add(box);
+                    box.parent = null;
+                }
+                
+            }
         }
     }
 
